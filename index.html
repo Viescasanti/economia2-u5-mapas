@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mapas conceptuales U5 - Bloques comerciales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* superficie y tinta */
+  --bg:#eef2f6; --paper:#ffffff; --ink:#1b2533; --ink-soft:#4a5668; --line:#8e9aab;
+  /* jerarquía del mapa: tema central → idea principal → detalle */
+  --root:#1e3a5f; --root-ink:#ffffff;
+  --l1:#a8540a; --l1-tint:#fdf6ee;
+  --l2:#2f6f5e;
+  --focus:#2563eb;
+  --shadow:0 1px 2px rgba(27,37,51,.06),0 4px 12px -4px rgba(27,37,51,.12);
+  --radius:10px;
+  --gap-x:92px; /* espacio horizontal donde va el conector */
+  --font-head:"Literata",Georgia,serif;
+  --font-body:"Source Sans 3","Segoe UI",Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 15px/1.45 var(--font-body)}
+::selection{background:#c9d8ee;color:var(--ink)}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
+header{max-width:1200px;padding:32px 24px 4px}
+h1{margin:0;font:700 clamp(22px,2.6vw,30px)/1.15 var(--font-head);letter-spacing:-.01em;text-wrap:balance}
+header p{margin:8px 0 0;color:var(--ink-soft);font-size:14px}
+
+nav{display:flex;flex-wrap:wrap;gap:8px;padding:20px 24px 8px}
+nav button{border:1px solid #c3ccd8;background:var(--paper);color:var(--ink);border-radius:999px;padding:9px 16px;font:600 14px/1 var(--font-body);cursor:pointer;transition:background-color .15s ease-out,border-color .15s ease-out}
+nav button:hover{border-color:var(--root)}
+nav button[aria-selected="true"]{background:var(--root);color:var(--root-ink);border-color:var(--root)}
+
+.wrap{overflow-x:auto;padding:16px 24px 48px;scrollbar-color:#b4bfcc transparent;scrollbar-width:thin}
+.map{display:none;min-width:max-content}
+.map.on{display:block}
+.map h2{display:none;margin:0 0 16px;font:700 20px/1.2 var(--font-head)}
+
+/* árbol */
+.node{display:flex;align-items:center}
+.box{background:var(--paper);border:1.5px solid var(--l2);border-radius:var(--radius);padding:9px 13px;max-width:270px;font-size:14.5px;line-height:1.4;box-shadow:var(--shadow)}
+.root>.box{background:var(--root);color:var(--root-ink);border-color:var(--root);font:700 17px/1.25 var(--font-head);max-width:210px;padding:14px 18px;text-align:center}
+.lvl1>.box{border:2px solid var(--l1);background:var(--l1-tint);font-weight:600}
+.kids{display:flex;flex-direction:column;position:relative}
+.kid{display:flex;align-items:center;position:relative;padding:6px 0 6px var(--gap-x)}
+.kid::before{content:"";position:absolute;left:0;top:50%;width:var(--gap-x);border-top:1.5px solid var(--line)}
+.kid::after{content:"";position:absolute;left:0;top:0;bottom:0;border-left:1.5px solid var(--line)}
+.kid:first-child::after{top:50%}
+.kid:last-child::after{bottom:50%}
+.kid:only-child::after{display:none}
+.kid>.node>.link{position:absolute;left:6px;bottom:50%;margin-bottom:4px;width:calc(var(--gap-x) - 12px);text-align:center}
+.link{font-size:12px;font-style:italic;color:var(--ink-soft);line-height:1.15;text-wrap:balance}
+.stem{width:28px;border-top:1.5px solid var(--line);align-self:center}
+
+/* celular: el árbol pasa a lista indentada, sin scroll lateral */
+@media (max-width:720px){
+  header{padding:24px 16px 0}
+  nav{padding:16px 16px 4px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+  nav button{flex:none}
+  .wrap{padding:12px 16px 40px;overflow:visible}
+  .map{min-width:0}
+  .node{flex-direction:column;align-items:stretch}
+  .stem{display:none}
+  .box,.root>.box{max-width:none}
+  .root>.box{text-align:left}
+  .kids{margin-left:10px;padding-top:4px}
+  .kid{display:block;padding:8px 0 0 22px}
+  .kid::before{top:calc(8px + 1.1em);width:18px}
+  .kid::after{top:0;bottom:0}
+  .kid:first-child::after{top:0}
+  .kid:last-child::after{bottom:auto;height:calc(8px + 1.1em)}
+  .kid:only-child::after{display:block}
+  .kid>.node>.link{position:static;width:auto;text-align:left;margin:0 0 4px;display:block}
+  .kid:has(>.node>.link)::before{top:calc(8px + 2.2em)}
+  .kid:last-child:has(>.node>.link)::after{height:calc(8px + 2.2em)}
+}
+
+@media print{
+  body{background:#fff}
+  nav{display:none}
+  header{padding:0 0 8px}
+  .wrap{overflow:visible;padding:0}
+  .map{display:block;break-after:page}
+  .map h2{display:block}
+  .box{box-shadow:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <h1>Bloques comerciales: mapas conceptuales</h1>
+  <p>Fundamentos de Economía II · Unidad 5 · Lic. Maris Soledad Lagraña · Fuente: Nota de cátedra U5</p>
+</header>
+<nav id="tabs" role="tablist" aria-label="Mapas conceptuales"></nav>
+<main class="wrap" id="maps"></main>
+
+<script>
+// n(texto, conector, hijos)
+const n=(t,l,k)=>({t,l,k:k||[]});
+
+const MAPAS={
+"Bloques comerciales": n("Bloques comerciales","",[
+  n("Acuerdos entre países","son",[
+    n("Sacan las barreras al comercio entre ellos","para",[]),
+    n("Los países de afuera del bloque siguen teniendo las barreras, a ellos no se les sacan","pero",[]),
+    n("Mercados más grandes","porque quieren acceder a",[])
+  ]),
+  n("Integración económica","cuando se forman hay",[
+    n("5 niveles","que tiene",[
+      n("1º Área de libre comercio: entre ellos no hay barreras, pero cada país pone las suyas hacia afuera. Ej.: TLCAN","",[]),
+      n("2º Unión aduanera: lo mismo que el anterior pero además ponen un arancel común a lo que entra de otros países. Ej.: MERCOSUR","",[]),
+      n("3º Mercado común: + libre circulación de trabajadores y capitales. Ej.: UE","",[]),
+      n("4º Unión económica: políticas económicas comunes, algunos con la misma moneda (euro). Ej.: UE","",[]),
+      n("5º Unión económica plena: integración total, habría un gobierno general que decide todo. La UE no llegó a esto todavía","",[])
+    ])
+  ])
+]),
+
+"MERCOSUR": n("MERCOSUR (Mercado Común del Sur)","",[
+  n("Proceso de integración regional","es un",[
+    n("26 de marzo de 1991, con la firma del Tratado de Asunción","creado el",[]),
+    n("Argentina, Brasil, Paraguay y Uruguay, y más adelante se incorporaron Venezuela y Bolivia","lo crearon",[])
+  ]),
+  n("Generar un espacio común con oportunidades de comercio y de inversiones","su objetivo es",[
+    n("Integrando las economías de los países al mercado internacional de forma competitiva","mediante",[])
+  ]),
+  n("Mercado común","el Tratado de Asunción dice que es un",[
+    n("Libre circulación de bienes, servicios y factores productivos (sin derechos aduaneros ni restricciones)","",[]),
+    n("Arancel externo común y una política comercial común con otros países","",[]),
+    n("Coordinan las políticas macroeconómicas y sectoriales (comercio exterior, agrícola, industrial, fiscal, monetaria, cambiaria, etc.)","",[]),
+    n("Se comprometen a armonizar las leyes para fortalecer la integración","",[])
+  ]),
+  n("Acuerdos","firmó",[
+    n("Estados Asociados: son los países sudamericanos, que participan en el bloque y tienen preferencias comerciales","",[]),
+    n("Con otros países y organismos de los cinco continentes, que pueden ser comerciales, políticos o de cooperación","",[])
+  ]),
+  n("Unión aduanera","como nivel de integración es una",[])
+]),
+
+"TLCAN": n("TLCAN (Tratado de Libre Comercio de América del Norte)","",[
+  n("Acuerdo de libre comercio","es un",[
+    n("Canadá y EE. UU. en 1992; después se amplió a México","firmado por",[]),
+    n("No tiene poder político como la UE, lo gestiona un Secretariado que resuelve las disputas comerciales","a diferencia de la UE",[])
+  ]),
+  n("Impulsar el libre comercio en América del Norte","su objetivo es",[
+    n("Reducir o eliminar obstáculos y aranceles para que circulen bienes y servicios","",[]),
+    n("Competencia justa respetando las leyes de la competencia","",[]),
+    n("Defensa de la propiedad intelectual","",[]),
+    n("Tener un mecanismo para las disputas comerciales","",[]),
+    n("Cooperación entre los países firmantes y crear condiciones para que haya inversión","",[])
+  ]),
+  n("Efectos","tuvo",[
+    n("Creció mucho la inversión extranjera directa (IED) en México de Canadá y EE. UU.","positivos",[]),
+    n("EE. UU. exportó productos agrícolas sin aranceles a México, que recortó subsidios, y los productores mexicanos no podían competir → aumentó el desempleo agrícola. Y México depende cada vez más de EE. UU.","negativos",[])
+  ]),
+  n("Se renegoció","luego",[
+    n("Trump lo criticó desde 2016 (“el peor acuerdo de la historia”) y en 2017 se empezó a negociar","",[]),
+    n("T-MEC: la versión 2.0 del TLCAN, vigente desde 2020, con mejoras en comercio digital, condiciones laborales y medio ambiente","dando lugar al",[])
+  ])
+]),
+
+"Unión Europea": n("Unión Europea (UE)","",[
+  n("Entidad geopolítica que abarca gran parte de Europa","es una",[
+    n("Facilitar la cooperación económica y política entre los miembros","se creó para",[]),
+    n("Libre circulación de personas, bienes, servicios y capitales","promueve la",[])
+  ]),
+  n("Comunidad Europea del Carbón y del Acero (1951)","su origen es la",[
+    n("6 países fundadores: Alemania, Bélgica, Francia, Italia, Luxemburgo y Países Bajos","con",[]),
+    n("Comunidad Económica Europea (1957), que estableció un mercado común","después la",[]),
+    n("27 miembros hoy","llegando a",[])
+  ]),
+  n("Instituciones","tiene",[
+    n("Parlamento Europeo, Comisión Europea y Consejo de la UE, que toman las decisiones juntas","",[]),
+    n("El euro, moneda única que usan 19 países (zona euro)","y además",[])
+  ]),
+  n("Objetivos","",[
+    n("Paz, estabilidad y prosperidad en Europa","",[]),
+    n("Mercado único, cuidar el medio ambiente, derechos humanos y seguridad","",[]),
+    n("Ayuda al desarrollo y política exterior, quiere ser un actor global","también",[])
+  ]),
+  n("Democracia, igualdad y estado de derecho","valores que promueve",[])
+]),
+
+"Cuenca del Pacífico": n("Cuenca del Pacífico","",[
+  n("Los territorios alrededor del océano Pacífico, la costa y también las islas","comprende",[]),
+  n("Organizaciones","en ella se concentran varias",[
+    n("APEC (Cooperación Económica Asia-Pacífico)","",[
+      n("Foro multilateral de 1989","es un",[]),
+      n("Consolidar el crecimiento y la prosperidad de los países del Pacífico (comercio, inversiones, cooperación económica y técnica)","busca",[]),
+      n("No tiene tratado formal, decide por consenso y sus declaraciones no son vinculantes (no obligan)","funciona así:",[]),
+      n("Secretaría General en Singapur para apoyo técnico","",[])
+    ]),
+    n("EWC (East-West Center, Centro Este-Oeste)","",[
+      n("Lo fundó el Congreso de EE. UU. en 1960","",[]),
+      n("Ser un puente de diálogo entre el Este (Asia y Pacífico) y el Oeste (EE. UU.)","su objetivo es",[]),
+      n("Investigación, programas educativos y de intercambio, diálogo entre líderes","hace",[])
+    ])
+  ])
+])
+};
+
+function render(node,depth){
+  const el=document.createElement("div");
+  el.className="node"+(depth===0?" root":"")+(depth===1?" lvl1":"");
+  const b=document.createElement("div");b.className="box";b.textContent=node.t;
+  el.appendChild(b);
+  if(node.k.length){
+    const s=document.createElement("div");s.className="stem";el.appendChild(s);
+    const kids=document.createElement("div");kids.className="kids";
+    node.k.forEach(c=>{
+      const kid=document.createElement("div");kid.className="kid";
+      const ch=render(c,depth+1);
+      if(c.l){const l=document.createElement("span");l.className="link";l.textContent=c.l;ch.insertBefore(l,ch.firstChild);}
+      kid.appendChild(ch);kids.appendChild(kid);
+    });
+    el.appendChild(kids);
+  }
+  return el;
+}
+
+const tabs=document.getElementById("tabs"),maps=document.getElementById("maps");
+const pares=[];
+function activar(i,foco){
+  pares.forEach(([b,m],j)=>{
+    const on=j===i;
+    b.setAttribute("aria-selected",on);b.tabIndex=on?0:-1;m.classList.toggle("on",on);
+  });
+  if(foco)pares[i][0].focus();
+}
+Object.entries(MAPAS).forEach(([name,tree],i)=>{
+  const btn=document.createElement("button");btn.textContent=(i+1)+". "+name;
+  btn.id="tab"+i;btn.setAttribute("role","tab");btn.setAttribute("aria-controls","map"+i);
+  const m=document.createElement("section");m.className="map";m.id="map"+i;
+  m.setAttribute("role","tabpanel");m.setAttribute("aria-labelledby","tab"+i);
+  const h=document.createElement("h2");h.textContent=(i+1)+". "+name;m.appendChild(h);
+  m.appendChild(render(tree,0));
+  btn.onclick=()=>activar(i);
+  btn.onkeydown=e=>{
+    const k={ArrowRight:1,ArrowLeft:-1}[e.key];
+    if(k){e.preventDefault();activar((i+k+pares.length)%pares.length,true);}
+  };
+  tabs.appendChild(btn);maps.appendChild(m);pares.push([btn,m]);
+});
+activar(0);
+</script>
+</body>
+</html>
